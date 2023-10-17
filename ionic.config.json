@@ -1,0 +1,7 @@
+{
+  "name": "rc-scooter",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
