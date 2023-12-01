@@ -1,10 +1,10 @@
 <template>
   <ion-page>
-    <ion-header>
+    <!--ion-header>
       <ion-toolbar>
         <ion-title>Game</ion-title>
       </ion-toolbar>
-    </ion-header>
+    </ion-header-->
     <ion-content :fullscreen="true">
       <div id="scenebox" ref="scenebox"></div>
     </ion-content>
@@ -34,10 +34,11 @@ function animate() {
 onMounted(() => {
   const scenebox = document.getElementById("scenebox");
   const canvasElement = scenebox as unknown as HTMLDivElement;
+  const innerTab = document.getElementsByClassName("tabs-inner");
 
   // from tutorial
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(innerTab[0].clientWidth, innerTab[0].clientHeight);
   canvasElement.appendChild(renderer.domElement);
 
   camera.position.set(2, 2, 2);
