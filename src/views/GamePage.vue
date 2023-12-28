@@ -15,20 +15,31 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 import { ref, onMounted, render } from 'vue';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { World } from '../js/world.js';
 
 const renderer = new THREE.WebGLRenderer();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
 const scene = new THREE.Scene();
-
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshBasicMaterial({ color: 0x00d000 });
-const cube = new THREE.Mesh(geometry, material);
+const world = new World();
 
 function animate() {
   requestAnimationFrame(animate);
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
   renderer.render(scene, camera);
+}
+
+function setupLights() {
+  const light1 = new THREE.DirectionalLight();
+  light1.position.set(1, 1, 1);
+  scene.add(light1);
+
+  const light2 = new THREE.DirectionalLight();
+  light2.position.set(-1, -1, 0.5);
+  scene.add(light2);
+
+  const light3 = new THREE.AmbientLight();
+  light3.intensity = 0.1;
+  scene.add(light3);
 }
 
 onMounted(() => {
@@ -38,14 +49,21 @@ onMounted(() => {
 
   // from tutorial
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(innerTab[0].clientWidth, innerTab[0].clientHeight);
+  // renderer.setSize(innerTab[0].clientWidth, innerTab[0].clientHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight - 60); // substitute this out in the future
+  renderer.setClearColor(0x80a0e0);
+  const controller = new OrbitControls(camera, renderer.domElement);
   canvasElement.appendChild(renderer.domElement);
 
-  camera.position.set(2, 2, 2);
+  camera.position.set(-32, 16, -32);
   camera.lookAt(0, 0, 0);
 
-  scene.add(cube);
+  controller.target.set(16, 0, 16);
+  controller.update();
 
+  setupLights();
+  world.generate();
+  scene.add(world);
   animate();
 });
 
