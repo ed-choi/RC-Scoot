@@ -17,15 +17,19 @@ import { ref, onMounted, render } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { World } from '../js/world.js';
+import Stats from 'three/examples/jsm/libs/stats.module.js';
 
 const renderer = new THREE.WebGLRenderer();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
 const scene = new THREE.Scene();
 const world = new World();
 
+const stats = new Stats();
+
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
+  stats.update();
 }
 
 function setupLights() {
@@ -46,6 +50,9 @@ onMounted(() => {
   const scenebox = document.getElementById("scenebox");
   const canvasElement = scenebox as unknown as HTMLDivElement;
   const innerTab = document.getElementsByClassName("tabs-inner");
+
+  // add FPS counter
+  canvasElement.append(stats.dom);
 
   // from tutorial
   renderer.setPixelRatio(window.devicePixelRatio);
