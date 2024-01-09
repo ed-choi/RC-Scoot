@@ -18,6 +18,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { World } from '../js/world.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { createOutline } from 'ionicons/icons';
+import { createUI } from '../js/ui.js';
 
 const renderer = new THREE.WebGLRenderer();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
@@ -70,6 +72,7 @@ onMounted(() => {
 
   setupLights();
   world.generate();
+  createUI(world);
   scene.add(world);
   animate();
 });
