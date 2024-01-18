@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise.js';
 
 const geometry = new THREE.BoxGeometry();
 const material = new THREE.MeshLambertMaterial({ color: 0x00d000 });
@@ -13,6 +14,14 @@ export class World extends THREE.Group {
    */
   data = [];
 
+  params = {
+    terrain: {
+      scale: 30,
+      magnitude: 0.5,
+      offset: 0.2
+    }
+  };
+
   constructor(size={ width: 64, height: 32 }) {
     super();
     this.size = size;
@@ -22,14 +31,15 @@ export class World extends THREE.Group {
    * Genearte world meshes and terrain
    */
   generate() {
+    this.initializeTerrain();
     this.generateTerrain();
     this.generateMeshes();
   }
 
   /**
-   * Generates world terrain data
+   * Initializing world terrain data
    */
-  generateTerrain () {
+  initializeTerrain () {
     this.data = [];
     for (let x = 0; x < this.size.width; x++) {
       const slice = [];
@@ -37,13 +47,40 @@ export class World extends THREE.Group {
         const row = [];
         for (let z = 0; z < this.size.width; z++) {
           row.push({
-            id: 1,
+            id: 0,
             instanceId: null
           });
         }
         slice.push(row);
       }
       this.data.push(slice);
+    }
+  }
+
+  /**
+   * Generate the terrain
+   */
+  generateTerrain() {
+    // use default random number generator
+    // we will need to change this later since the built-in RNG does not accept seeds
+    const simplex = new SimplexNoise();
+
+    for (let x = 0; x < this.size.width; x++) {
+      for (let z = 0; z < this.size.width; z++) {
+        const value = simplex.noise(
+          x / this.params.terrain.scale,
+          z / this.params.terrain.scale
+        );
+
+        const scaledNoise = this.params.terrain.offset +
+          this.params.terrain.magnitude * value;
+        let height = Math.floor(scaledNoise * this.size.height);
+        height = Math.max(0, Math.min(height, this.size.height - 1));
+
+        for (let y = 0; y <= height; y++) {
+          this.setBlockId(x, y, z, 1);
+        }
+      }
     }
   }
 
